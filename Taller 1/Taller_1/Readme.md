@@ -9,15 +9,15 @@ Las escalas de grises nos ayudan a observar la cantidad de luz en una imagen, la
 
 * ## Filtros y convoluciones:
 
-P
+En el procesamiento de imagenes, a veces se requiere que las imagenes nos muestren información detallada de su forma, trazos, o conjunto, y quitar algunas partes de la iamgen o resaltarlas puede ser de gran ayuda. Alli entran los filtros y las convoluciones. cuando trabajamos con el area alrededor de cada pixel podemos ver con mayor claridad ciertos detalles de la imagen. El uso de matrices aplicadas a cada pixel nos permiten desenfocar, afilar, estampar, detectar bordes y más. Esto se logra haciendo una convolución entre un kernel y una imagen.
 
 * ## Histogramas:
 
-S
+Como hemos mencionado, en una imagen se encuentra mucha información y a veces sólo requerimos una parte de la imagen. Aparte de usar Filtros y convoluciones, podemos hacer uso de los histogramas y la segmentación. Con un histograma podemos observar por medio de un gráfico de barras, que partes del gráfico tienen una determinada cantidad de brillo, como se hizo en el taller, o analizar su espectro de rojos, verdes y azules, entre muchos otros análisis. Una vez obtenido el histograma, Se puede segmentar para que sólo se muestre una pequeña parte del espectro, como un cierto número de brillo por ejemplo. En el taller, a pesar de que se había recomendado el usoi de 2 algoritmos, se utilizó el método de Otsu
 
 * ## Videos y FPS:
 
-U
+Los videos son un conjunto de imagenes sucesivas. Es por esto que también se le pueden realizar todos los análisis mencionados anteriormente. En el programa presentado se puede ver como el video es pasado a escala de grises o se le aplican diversos filtros. Se le puso un medidor de FPS para ver la eficacia computacional. No se notan grandes cambios en los FPS, en los videos intentados, pero si cuando se utilizan otras técnicas para observar el video como lo es el redimensionamiento.
 
 ## Taller 1
 
@@ -31,4 +31,9 @@ Emplear dos [canvas](https://processing.org/reference/PGraphics.html), uno para 
 
 ## Bibliografía
 
+* https://processing.org/tutorials/pixels/
+* https://en.wikipedia.org/wiki/Luma_(video)
+* https://en.wikipedia.org/wiki/Kernel_(image_processing)
+* https://bostjan-cigan.com/java-image-binarization-using-otsus-algorithm/
 * 
+
