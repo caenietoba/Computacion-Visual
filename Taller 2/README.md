@@ -58,9 +58,13 @@ Las rectas paralelas parecen inclinarse hacia la derecha, hacia arriba o hacia a
 
 Una cuadricula alternandose entre 2 colores parece ser curva cuando en las intersecciones de la cuadricula se colocan rombos con un contraste más fuerte.
 
-* T-rex illusion
+* ## T-rex illusion
 
 Esta ilusión óptica está basada en la anamorfosis, que no es más que la deformación de una imagen a través de efectos perspectivos, ya sea con espejos, lentes o rediseños de objetos.
+
+* ## "Missing Corner" Cube
+
+Aquí se puede observar un cubo al que le falta una de sus esquinas, pero a su vez, podemos ver un cubo al que se le ha adjuntado un cubo más pequeño en la esquina. Si miramos desde un punto en especifico, podriamos ver una habitación en la que alguien ha puesto un cubo en el fondo.
 
 * ## Ames room
 
