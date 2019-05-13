@@ -35,5 +35,3 @@ Emplear dos [canvas](https://processing.org/reference/PGraphics.html), uno para 
 * https://en.wikipedia.org/wiki/Luma_(video)
 * https://en.wikipedia.org/wiki/Kernel_(image_processing)
 * https://bostjan-cigan.com/java-image-binarization-using-otsus-algorithm/
-* 
-
