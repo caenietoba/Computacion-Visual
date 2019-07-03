@@ -79,7 +79,7 @@ vec4 displaceVertexFunc( vec4 pos, float phase, float frequency )
 
 void main() {
 
-  /**/
+  /*
   vec4 displacedVertex;
 	vec3 displacedNormal;
 	
@@ -121,7 +121,7 @@ void main() {
 	                                 tangent.xyz,
 	                                 binormal,
 	                                 time*2.0,
-	                                 frequency );
+	                                 frequency 
   /**/
 
   gl_Position = transform * position;    
