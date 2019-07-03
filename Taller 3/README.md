@@ -87,3 +87,11 @@ El programa cuenta con ciertas opciones para cambiar el comportamiento en tiempo
     - 1. Cambia la distribución usada para poner los puntos por una distribución predefinida. 
     - 2. Cambia la distribución usada para poner los puntos de forma aleatoria.
     - 3. Cambia la distribución usada para poner los puntos de forma uniforme.
+    
+## Referencias
+
+  - https://es.wikipedia.org/wiki/Anti-aliasing_espacial
+  - https://www.profesionalreview.com/2017/07/02/que-es-el-antialiasing-y-como-funciona/
+  - https://en.wikipedia.org/wiki/Supersampling
+  - http://www.x86-secret.com/articles/divers/v5-6000/datasheets/FSAA.pdf
+  - https://www.tomshardware.com/reviews/anti-aliasing-nvidia-geforce-amd-radeon,2868-2.html
