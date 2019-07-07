@@ -65,19 +65,17 @@ Esta funcionalidad se implemento con un solo shader 'convolutionfrag.glsl' el cu
 
 Benchmark:
 
-  |       máscara      |    Software    |     Shader     |
-  |--------------------|----------------|----------------|
-  |                    | Imagen | Video | Imagen | Video |
-  |--------------------|--------|-------|--------|-------|
-  | Edges detection    |   12   |  12   |   58   |  58   |
-  | Sharpen            |   12   |  12   |   58   |  58   |
-  | Emboss             |   12   |  12   |   60   |  60   |
-  | Simple blur        |   12   |  12   |   59   |  59   |
-  | Gaussian 3x3       |   11   |  11   |   57   |  57   |
-  | Random             |   12   |  12   |   58   |  58   |
-  | Laplaciana         |    6   |   6   |   58   |  58   |
-  | Motion blur        |    6   |   6   |   60   |  60   |
-  | Interpolation mean |    6   |   6   |   59   |  59   |
+  |       máscara      | Software | Shader |
+  |--------------------|----------|--------|
+  | Edges detection    |    12    |   58   |
+  | Sharpen            |    12    |   58   |
+  | Emboss             |    12    |   60   |
+  | Simple blur        |    12    |   59   |
+  | Gaussian 3x3       |    12    |   57   |
+  | Random             |    12    |   58   |
+  | Laplaciana         |     6    |   58   |
+  | Motion blur        |     6    |   60   |
+  | Interpolation mean |     6    |   60   |
 
 ## 2. Iluminación phong
 
