@@ -4,15 +4,107 @@ import processing.opengl.*;
 Movie video;
 
 float canSize = 120;
-PImage label;
-PImage moon;
-PImage circle;
 PShape can;
 PShape cap;
 
-PShader pixlightShader;
+PImage mandril;
+PImage cat;
+PImage label;
+PImage _light;
+PImage circle;
+PImage wood_height;
+PImage wood_normal;
+PImage moon;
+PImage moon2;
+
+PShader lightShader;
 PShader maskShader;
 
+/** 
+* Máscaras de convolución usadas en el software (Hasta la linea 104)
+*/
+float[][] edges_mask_soft = { 
+  { -1, -1, -1 },
+  { -1,  8, -1 },
+  { -1, -1, -1 } 
+}; 
+
+float[][] sharpen_mask_soft = {
+  { -1, -1, -1 },
+  { -1,  9, -1 },
+  {-1, -1, -1}
+};
+
+float[][] emboss_mask_soft =
+{
+  {-1, -1,  0},
+  {-1,  0,  1},
+  {0,  1,  1}
+};
+
+float[][] simple_blur_mask_soft = {
+  {0.111, 0.111, 0.111}, 
+  {0.111, 0.111, 0.111}, 
+  {0.111, 0.111, 0.111}
+};
+
+float[][] gaussian3x3_mask_soft = {
+  {0.077847, 0.123317, 0.077847},
+  {0.123317, 0.195346, 0.123317},
+  {0.077847, 0.123317, 0.077847},
+};
+
+float[][] gaussian5x5_mask_soft = {
+  {1,  4,  6,  4,  1},
+  {4, 16, 24, 16,  4},
+  {6, 24, 36.0, 24, 6},
+  {4, 16, 24, 16,  4},
+  {1,  4,  6,  4,  1},
+};
+                            
+float[][] laplacian_mask_soft = {
+  {0,  0,  -1, 0,  0},
+  {0,  -1, -2, -1, 0},
+  {-1, -2, 16, -2, -1},
+  {0,  -1, -2, -1, 0},
+  {0,  0,  -1, 0,  0},
+};
+                        
+float[][] mask1_soft = {
+  {1, 1, 1}, 
+  {1, 1, 1}, 
+  {1, 1, 1}
+};
+                
+float[][] matrix2_soft = { 
+  {-1, 0, 1},
+  {-1,  0, 1},
+  {-1, 0, 1}
+};
+                    
+float[][] motion_blur_mask_soft = {
+  {1, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 1, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 1, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 1, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 1, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 1, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 1, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 1, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 1}
+};
+
+float[][] interpolation_mean_filter_soft = {
+  {1/36.0,   1/36.0,   1/36.0,   1/36.0,   1/36.0},
+  {1/36.0,   2/36.0,   2/36.0,   2/36.0,   1/36.0},
+  {1/36.0,   2/36.0,   4/36.0,   2/36.0,   1/36.0},
+  {1/36.0,   2/36.0,   2/36.0,   2/36.0,   1/36.0},
+  {1/36.0,   1/36.0,   1/36.0,   1/36.0,   1/36.0}
+};
+
+/** 
+* Máscaras de convolución usadas en el shader (Hasta la linea 185)
+*/
 float[] edges_mask = {
   -1, -1, -1, 
   -1,  8, -1, 
@@ -92,6 +184,8 @@ float[] interpolation_mean_filter = {
   1/36.0,   1/36.0,   1/36.0,   1/36.0,   1/36.0
 };
 
+boolean useMaskSoft = false;
+
 boolean useLight = false;
 boolean useTexture = true;
 boolean useAmbiental = false;
@@ -112,6 +206,7 @@ float x_light = 0;
 float y_light = 0;
 
 float[] mask = interpolation_mean_filter;
+float[][] mask_soft = interpolation_mean_filter_soft; 
 
 PShape light;
 
@@ -119,18 +214,22 @@ void setup() {
   size(1200, 700, P3D);
   
   label = loadImage("lachoy.jpg");
-  moon = loadImage("Flare.JPG");
+  _light = loadImage("Flare.JPG");
   circle = loadImage("planet.png");
+  mandril = loadImage("mandril.jpg");
+  moon = loadImage("moon.png");
+  moon2 = loadImage("moon2.png");
+  
   video = new Movie(this, "video.mov");
   video.loop();
   
   can = createCan(canSize, 2 * canSize, 32, label);
   cap = createCap(canSize, 32);
   
-  light = createMoon(moon);
+  light = create_light(_light);
   
   maskShader = loadShader("convolutionfrag.glsl");
-  pixlightShader = loadShader("lightfrag.glsl", "lightvert.glsl");
+  lightShader = loadShader("lightfrag.glsl", "lightvert.glsl");
 }
 
 void draw() {
@@ -139,13 +238,12 @@ void draw() {
   if(useLight){
     
     configureLights();
-      
-    shader(pixlightShader);
+    lightShader.set("normal_map", wood_normal);
+    shader(lightShader);
 
-    pointLight(255, 255, 255, x_light, y_light, z_light);
+    pointLight(135, 135, 135, x_light, y_light, z_light);
     //pointLight(255, 255, 255, width/2, height/2, 200);
   } else if(useMask){
-    //maskShader = loadShader("convolutionfrag.glsl"); //Evitar que un cambio de mascara dañe las otras
     maskShader.set("mask", mask);
     shader(maskShader);
   }
@@ -154,6 +252,23 @@ void draw() {
   drawCan(x_figure, y_figure, z_figure);
   //resetShader();
   drawLight(x_light, y_light, z_light);
+  
+  if(useMaskSoft){
+      loadPixels();
+      // Begin our loop for every pixel in the smaller image
+      for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++ ) {
+          color c = convolution(x, y, mask_soft, mask_soft.length);
+          int loc = x + y*width;
+          pixels[loc] = c;
+        }
+      }
+      updatePixels();
+  }
+  
+  fill(255);
+  textSize(25);
+  text("FPS: " + int(frameRate), 500, 600);  
 }
 
 void drawPlanet(){
@@ -173,7 +288,7 @@ void drawLight(float x, float y, float z){
   pushMatrix();
   noStroke();
   translate(x, y, z);
-  light.setTexture(moon);
+  light.setTexture(_light);
   shape(light);
   popMatrix();
 }
@@ -211,7 +326,7 @@ void drawCan(float x, float y, float z) {
   popMatrix();
 }
 
-PShape createMoon(PImage tex){
+PShape create_light(PImage tex){
   noStroke();
   PShape shape = createShape(SPHERE,35);
   shape.setTexture(tex);
@@ -255,25 +370,53 @@ PShape createCap(float r, int detail) {
 
 void configureLights(){
   if(useAmbiental){
-    pixlightShader.set("useAmbiental", 1);
-    pixlightShader.set("intensityAmbiental", 1.0);
+    lightShader.set("useAmbiental", 1);
+    lightShader.set("intensityAmbiental", 0.1);
   }
   if(!useAmbiental){
-    pixlightShader.set("useAmbiental", 0);
-    pixlightShader.set("intensityAmbiental", 0);
+    lightShader.set("useAmbiental", 0);
+    lightShader.set("intensityAmbiental", 0);
   }
   if(useDiffuse)
-    pixlightShader.set("useDiffuse", 1);
+    lightShader.set("useDiffuse", 1);
   if(!useDiffuse)
-    pixlightShader.set("useDiffuse", 0);
+    lightShader.set("useDiffuse", 0);
   if(useSpecular){
-    pixlightShader.set("useSpecular", 1);
-    pixlightShader.set("shinessSpecular", 8);
+    lightShader.set("useSpecular", 1);
+    lightShader.set("shinessSpecular", 8);
   }
   if(!useSpecular){
-    pixlightShader.set("useSpecular", 0);
-    pixlightShader.set("shinessSpecular", 0);
+    lightShader.set("useSpecular", 0);
+    lightShader.set("shinessSpecular", 0);
   }
+}
+
+color convolution(int x, int y, float[][] matrix, int matrixsize)
+{
+  float rtotal = 0.0;
+  float gtotal = 0.0;
+  float btotal = 0.0;
+  int offset = matrixsize / 2;
+  for (int i = 0; i < matrixsize; i++){
+    for (int j= 0; j < matrixsize; j++){
+      // What pixel are we testing
+      int xloc = x+i-offset;
+      int yloc = y+j-offset;
+      int loc = xloc + width*yloc;
+      // Make sure we haven't walked off our image, we could do better here
+      loc = constrain(loc,0,pixels.length-1);
+      // Calculate the convolution
+      rtotal += (red(pixels[loc]) * matrix[i][j]);
+      gtotal += (green(pixels[loc]) * matrix[i][j]);
+      btotal += (blue(pixels[loc]) * matrix[i][j]);
+    }
+  }
+  // Make sure RGB is within range
+  rtotal = constrain(rtotal, 0, 255);
+  gtotal = constrain(gtotal, 0, 255);
+  btotal = constrain(btotal, 0, 255);
+  // Return the resulting color
+  return color(rtotal, gtotal, btotal);
 }
 
 void movieEvent(Movie m) {
@@ -299,6 +442,7 @@ void mouseWheel(MouseEvent event){
 }
 
 void keyPressed(){
+  maskShader = loadShader("convolutionfrag.glsl"); //Evitar que un cambio de mascara dañe las otras
   if(key == 'b'){
     useTexture = !useTexture;
   }
@@ -311,12 +455,20 @@ void keyPressed(){
   if(key == 'k'){
     useMask = true;
     useLight = false;
+    useMaskSoft = false;
   }
   if(key == 'l'){
     useLight = true;
     useMask = false;
+    useMaskSoft = false;
   }
   if(key == 'ñ'){
+    useLight = false;
+    useMask = false;
+    useMaskSoft = false;
+  }
+  if(key == 'j'){
+    useMaskSoft = true;
     useLight = false;
     useMask = false;
   }
@@ -329,31 +481,58 @@ void keyPressed(){
   if(key == '3' && useLight){
     useSpecular = !useSpecular;
   }
-  if(key == '1' && useMask){
+  if(key == '1' && (useMask || useMaskSoft)){
     mask = edges_mask;
+    mask_soft = edges_mask_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
-  if(key == '2' && useMask){
+  if(key == '2' && (useMask || useMaskSoft)){
     mask = sharpen_mask;
+    mask_soft = sharpen_mask_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
-  if(key == '3' && useMask){
+  if(key == '3' && (useMask || useMaskSoft)){
     mask = emboss_mask;
+    mask_soft = emboss_mask_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
-  if(key == '4' && useMask){
+  if(key == '4' && (useMask || useMaskSoft)){
     mask = simple_blur_mask;
+    mask_soft = simple_blur_mask_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
-  if(key == '5' && useMask){
+  if(key == '5' && (useMask || useMaskSoft)){
     mask = gaussian3x3_mask;
+    mask_soft = gaussian3x3_mask_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
-  if(key == '6' && useMask){
+  if(key == '6' && (useMask || useMaskSoft)){
     mask = mask1;
+    mask_soft = mask1_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
-  if(key == '7' && useMask){
+  if(key == '7' && (useMask || useMaskSoft)){
     mask = laplacian_mask;
+    mask_soft = laplacian_mask_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
-  if(key == '8' && useMask){
+  if(key == '8' && (useMask || useMaskSoft)){
     mask = motion_blur_mask;
+    mask_soft = motion_blur_mask_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
-  if(key == '9' && useMask){
+  if(key == '9' && (useMask || useMaskSoft)){
     mask = interpolation_mean_filter;
+    mask_soft = interpolation_mean_filter_soft;
+
+    maskShader = loadShader("convolutionfrag.glsl");
   }
 }

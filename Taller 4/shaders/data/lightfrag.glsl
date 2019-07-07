@@ -4,6 +4,7 @@ precision mediump int;
 #endif
 
 uniform sampler2D texture;
+uniform sampler2D normal_map;
 
 uniform int useAmbiental;
 uniform int useDiffuse;
@@ -41,6 +42,6 @@ vec4 specularLight(){
 }
 
 void main() {
-  vec4 tintColor = /*( ambientalLight() + diffuseLight() + specularLight() )*/1 * vertColor;
-  gl_FragColor = texture2D(texture, vertTexCoord.st) * tintColor ;
+  vec4 tintColor = ( ambientalLight() + diffuseLight() + specularLight() ) * vertColor;
+  gl_FragColor = texture2D(texture , vertTexCoord.st) * tintColor ;
 }

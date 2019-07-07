@@ -127,10 +127,10 @@ void main() {
   gl_Position = transform * position;    
   vec3 ecPosition = vec3(modelview * position);  
   
-  vec3 normal2 = normal * 2.0 - 1.0; 
+  vec3 normal2 = normal * 1.6; 
 
   //  Difusa
-  ecNormal = normalize(normalMatrix * displacedNormal);
+  ecNormal = normalize(normalMatrix * normal2);
   lightDir = normalize(lightPosition.xyz - ecPosition);
 
   //Especular
