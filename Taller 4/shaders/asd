@@ -248,7 +248,7 @@ bumpShader.set("NormalHeight", bump_map);
   if(useLight){
     
     configureLights();
-    lightShader.set("normal_map", bump_map);
+    lightShader.set("normal_map", wood_normal);
     shader(lightShader);
 
     pointLight(135, 135, 135, x_light, y_light, z_light);

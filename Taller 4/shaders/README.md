@@ -97,5 +97,7 @@ Al final se suman los 3 tipos de luces para obtener la iluminación Phong.
 
 ## 3. Bump mapping.
 
+El bump mapping es una técnica en computación grafíca para hacer que una superficie renderizada se vea más realista al simular pequeños desplazamientos de la superficie. Lo importante de esta técnica es que la malla poligonal (superficie de la geometria) nunca se modifica. Estas modificaciones al juntarlas con tecnicas de luz da la apariencia de una superficie arrugada.
+
 
 

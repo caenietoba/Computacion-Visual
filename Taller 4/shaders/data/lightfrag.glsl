@@ -42,6 +42,14 @@ vec4 specularLight(){
 }
 
 void main() {
+
+vec2 cBumpSize = 0.02 * vec2 (2.0, -1.0);
+  float height = texture2D(normal_map, vertTexCoord.st).a;
+	height = height * cBumpSize.x + cBumpSize.y;
+
+  vec3 bump = texture2D(normal_map, vertTexCoord.st*height).rgb * 2.0 - 1.0;
+	bump = normalize(bump);
+
   vec4 tintColor = ( ambientalLight() + diffuseLight() + specularLight() ) * vertColor;
   gl_FragColor = texture2D(texture , vertTexCoord.st) * tintColor ;
 }
